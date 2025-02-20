@@ -1,43 +1,45 @@
-'use strict';
+console.log('初始化监听器');
 
-// Content script file will run in the context of web page.
-// With content script you can manipulate the web pages using
-// Document Object Model (DOM).
-// You can also pass information to the parent extension.
+// 初始化监听器
+function initObserver(selector) {
+    console.log('当前选择器:', selector);
+    const audio = new Audio(chrome.runtime.getURL('sounds/alert.mp3'));
+    audio.volume = 0.5;
+    observer = new MutationObserver(mutations => {
+        mutations.forEach(mutation => {
+            mutation.addedNodes.forEach(node => {
+                console.log('子节点:', node);
+                const elements = node.querySelectorAll ?
+                    node.querySelectorAll(selector) : [];
+                // 如果找到匹配元素
+                if (elements.length > 0) {
+                    audio.play().catch(error => {
+                        if (error.name === 'NotAllowedError') {
+                            console.log('⚠️ 需要先点击页面任意位置激活音频权限！！');
+                        }
+                    });
 
-// We execute this script by making an entry in manifest.json file
-// under `content_scripts` property
+                }
+            });
+        });
+    });
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+}
 
-// For more information on Content Scripts,
-// See https://developer.chrome.com/extensions/content_scripts
+// 从存储加载配置
+chrome.storage.sync.get({
+    selector: 'sup.el-badge__content.is-dot',
+    volume: 0.5
+}, settings => {
+    initObserver(settings.selector);
+});
 
-// Log `title` of current active web page
-const pageTitle = document.head.getElementsByTagName('title')[0].innerHTML;
-console.log(
-  `Page title is: '${pageTitle}' - evaluated by Chrome extension's 'contentScript.js' file`
-);
-
-// Communicate with background file by sending a message
-chrome.runtime.sendMessage(
-  {
-    type: 'GREETINGS',
-    payload: {
-      message: 'Hello, my name is Con. I am from ContentScript.',
-    },
-  },
-  response => {
-    console.log(response.message);
-  }
-);
-
-// Listen for message
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.type === 'COUNT') {
-    console.log(`Current count is ${request.payload.count}`);
-  }
-
-  // Send an empty response
-  // See https://github.com/mozilla/webextension-polyfill/issues/130#issuecomment-531531890
-  sendResponse({});
-  return true;
+// 监听配置变化
+chrome.storage.onChanged.addListener(changes => {
+    if (changes.selector) {
+        initObserver(changes.selector.newValue);
+    }
 });
