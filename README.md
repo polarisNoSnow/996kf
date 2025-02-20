@@ -1,15 +1,16 @@
 # <img src="public/icons/icon_48.png" width="45" align="left"> 996客服插件
 
-My Chrome Extension
+插件功能
+对于收到console.kf.996sdk.net/currentChat网站用户信息及时播放警示音
 
 ## Features
 
-- Feature 1
-- Feature 2
+- 暂无
 
 ## Install
-
-[**Chrome** extension]()
+1.下载Releases的version0.1并解压
+2.打开chrome的扩展程序页面，将文件夹拖入即可
+3.在指定网站打开一次插件的页面并点击保存设置（授权声音播放）
 
 ## Contribution
 
