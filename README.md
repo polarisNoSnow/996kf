@@ -1,5 +1,6 @@
 # <img src="public/icons/icon_48.png" width="45" align="left"> 996客服插件
 
+本插件采用 vscode及其插件Chrome Extension Developer Tools开发
 插件功能
 对于收到console.kf.996sdk.net/currentChat网站用户信息及时播放警示音
 
